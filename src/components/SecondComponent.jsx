@@ -10,6 +10,8 @@ import Axios from 'axios';
 import { AiOutlineClose, AiOutlineFileJpg } from "react-icons/ai";
 import { RxCrossCircled } from "react-icons/rx";
 
+
+
 import {
   BsFileEarmarkRichtext,
   BsFillPlusCircleFill,
@@ -28,7 +30,13 @@ import {
   Radio,
   RadioGroup,
   TextField,
+  Typography,
+  IconButton,
+
 } from "@mui/material";
+import CloseIcon from "@material-ui/icons/Close";
+import { array } from "prop-types";
+
 const itemTypes=["Consumable","Non-Consumable"];
 const departmentItems = [
   "Laptop",
@@ -83,6 +91,7 @@ const SecondComponent = ({
   setFile,
   setDocuments,
 }) => {
+ 
 
   const openFile = () => {
     document.getElementById("document").click();
@@ -90,10 +99,16 @@ const SecondComponent = ({
   const openSecondFile = () => {
     document.getElementById("xmlfile").click();
   };
-  const url="";
-  const [data,setData]=useState({
-
-  })
+  const changeMultipleFiles = (e) => {
+      setxmlFile(e.target.files);
+    };
+  const handleFileRemove = (index) => {
+      setxmlFile(Array.from(xmlfile).filter((file, i) => i !== index));
+    };
+ 
+  
+  
+   
   function beforeUpload(file) {
     const filesFormats = [".xls,.xlsx,.csv,.jpg,.png,.svg,.docx,.txt,.zip,.pdf"];
     console.log(file);
@@ -107,31 +122,11 @@ const SecondComponent = ({
     return isRightFormat ;
   }
 
+  
+
   return (
 
     <div className="drawer-container">
-      {/* <div className="header">
-        <div className="sub-header">
-          <AiOutlineClose className="close-icon" onClick={onClose} />
-          <p
-            style={{
-              marginLeft: "10px",
-              borderRight: "2px solid #6B5DD3",
-              paddingRight: "10px",
-              color: "#6B5DD3",
-            }}
-          >
-            {firstName} {lastName}
-          </p>
-          <p style={{ paddingLeft: "10px", color: "#6B5DD3" }}>
-            Emp ID : {employeeID}
-          </p>
-        </div>
-        <div className="sub-header">
-          <p>Add Asset</p>
-          <p>Asset ID : 123456</p>
-        </div>
-      </div> */}
       <div className="content">
         <form onSubmit={handleFinalSubmit}>
           <div style={{ flexGrow: 1 }}>
@@ -142,7 +137,7 @@ const SecondComponent = ({
                 </FormLabel>
                 <ItemTypeBoxComponent
                   itemTypes={itemTypes}
-                  itemtype={itemType}
+                  itemType={itemType}
                   setitemType={setitemType}
                 />
               </Grid>
@@ -223,7 +218,7 @@ const SecondComponent = ({
                   className="form-input"
                   id="poNum"
                   type="text"
-                  placeholder="Enter Po No. Name"
+                  placeholder="Enter Purchase Order No."
                   _placeholder={{ color: "#80848C" }}
                   value={poNum}
                   onChange={(e) => setPoNum(e.target.value)}
@@ -244,7 +239,7 @@ const SecondComponent = ({
                     renderInput={(params) => (
                       <TextField {...params} error={false} />
                     )}
-                    format="DD/MMMM YYYY"
+                    format="DD-MM-YYYY"
                     value={assignedDate || null}
                     onChange={(newValue) => setAssignedDate(newValue)}
                   />
@@ -262,94 +257,16 @@ const SecondComponent = ({
                                     style={{ width: 'auto' }}
                                     row={true}
                                 >
-                                    <FormControlLabel value="yes" control={<Radio />} label="Yes" />
-                                    <FormControlLabel value="no" control={<Radio />} label="No" />
+                                    <FormControlLabel value={true} control={<Radio />} label="Yes"
+                                  />
+                                    <FormControlLabel value={false} control={<Radio />} label="No" 
+                                    />
                                 </RadioGroup>
                             </Grid>
                         </Grid>
             {/* </Grid> */}
             <Grid container spacing={4} marginTop="0px !important">
-              {/* <Grid item xs={12} sm={6}>
-                <FormLabel className="firstFo" htmlFor="Upload Document">
-                  Upload Document
-                </FormLabel>
-                <input
-                  className="form-input"
-                  id="upload"
-                  type="file"
-                  accept=".pdf,.xls,.xlsx,.csv,.jpg,.png,.svg,.docx,.txt,.zip"
-                  value={''}
-                  style={{ display: "none" }}
-                  onChange={(e) => setFile(e.target.value)}
-                />
-                <Button
-                  variant="outlined"
-                  className="form-document-upload"
-                  onClick={openFile}
-                >
-                  <BsFileEarmarkRichtext
-                    style={{ fontSize: "30px", color: "#6B5DD3" }}
-                  />
-                  <BsFillPlusCircleFill
-                    style={{
-                      marginTop: "20px",
-                      marginLeft: "-1.7%",
-                      fontSize: "12px",
-                      color: "#6B5DD3",
-                    }}
-                  />
-                  <div style={{ diplay: "flex", flexDirection: "column" }}>
-                    <p
-                      style={{
-                        fontSize: "12px",
-                        color: "black",
-                        fontWeight: "bold",
-                        textTransform: "none",
-                      }}
-                    >
-                      Upload attachements
-                    </p>
-                    <p
-                      style={{
-                        fontSize: "10px",
-                        color: "gray",
-                        textTransform: "none",
-                      }}
-                    >
-                      Or drag and drop it
-                    </p>
-                  </div>
-                </Button>
-                {/* <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    border: "1px solid lightgray",
-                    padding: "15px",
-                    marginTop: "15px",
-                    width: "180px",
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "center" }}>
-                    <AiOutlineFileJpg fontSize={"30px"} />
-                    <div>
-                      <p style={{ fontSize: "10px", marginLeft: "10px" }}>
-                        {file}
-                      </p>
-                      <p
-                        style={{
-                          borderRight: "1px solid gray",
-                          paddingRight: "10px",
-                        }}
-                      >
-                        Size : 120kb
-                      </p>
-                    </div>
-                  </div>
-                  <RxCrossCircled fontSize={"25px"} />
-                </div> 
-              </Grid> */}
+             
               <Grid item xs={12} sm={6} style={{marginTop:"22px"}}>
                 <FormLabel className="firstFo" htmlFor="xmlfile">
                 Upload Documents
@@ -360,9 +277,10 @@ const SecondComponent = ({
                   type="file"
                   accept=".xls,.xlsx,.csv,.jpg,.png,.svg,.docx,.txt,.zip,.pdf" 
                   id="xmlfile" 
-                  value={''}
+                 // value={''}
+                  multiple
                   style={{ display: "none" }}
-                  onChange={(e) => setxmlFile(e.target.files[0])}
+                 onChange={changeMultipleFiles}
                 />
                 <Button
                   variant="outlined"
@@ -393,7 +311,7 @@ const SecondComponent = ({
                     >
                       Upload Excel,PDF and Image only File
                     </p>
-                    <p
+                    {/* <p
                       style={{
                         fontSize: "10px",
                         color: "gray",
@@ -401,13 +319,58 @@ const SecondComponent = ({
                       }}
                     >
                       Or drag and drop it
-                    </p>
+                    </p> */}
                   </div>
                 </Button>
+               
               </Grid>
+             
             </Grid>
-            <Box className="form-button">
-            {/* <Button 
+            <Grid item xs={12}>
+          {/* Display selected and uploaded files */}
+          
+            <Grid container spacing={2} mt={2}>
+              {Array.from(xmlfile).map((file,index) => (
+                <Grid item key={index} xs={12} sm={6} md={4}>
+                  <div className="file-item">
+                  <div className="file-box">
+                    <Typography variant="body1">{file.name}</Typography>
+                    
+            <IconButton
+              className="delete-btn"
+              onClick={() => handleFileRemove(index)}
+              size="small"
+            >
+              <CloseIcon />
+            </IconButton>
+          </div>
+        </div>
+                 
+                </Grid>
+              ))}
+              </Grid>
+          
+        </Grid>
+            {/* <Grid container spacing={4} marginTop="0px !important">
+              <Grid item xs={12}>
+              { Array.from(xmlfile).map(file => {
+                return <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"15px"}}>
+            <img src="" alt="Image"/>
+            <div>
+                <p>{file.name}</p>
+                <p>Size : {file.size} |</p>
+            </div>
+            <div>
+                <img src="" alt="pause"/>
+                <img src="" alt="cross"/>
+            </div>
+        </div> 
+              }
+                 
+                )}
+              </Grid>
+            </Grid> */}
+            <Box className="form-button">            {/* <Button 
                  variant="solid"
                  style={{
                    backgroundColor: "#6B5DD3",
@@ -451,6 +414,7 @@ const SecondComponent = ({
               <Button
                 type="submit"
                 variant="solid"
+                
                 style={{
                   backgroundColor: "#6B5DD3",
                   color: "#FFFFFF",
@@ -458,7 +422,10 @@ const SecondComponent = ({
                   border: "1px solid #BABEC6",
                   marginBottom: "15px",
                 }}
-              >
+
+                
+              
+              > 
                 Save
               </Button>
             </Box>
@@ -498,7 +465,7 @@ const ItemTypeBoxComponent = ({ itemTypes, itemType, setitemType }) => {
         disableElevation
         onClick={handleClick}
         endIcon={<BsFillCaretDownFill style={{ color: "#6B5DD3" }} />}
-      >{console.log(itemType)}
+      >
         {itemType ? itemType : "Select Item Type"}
       </Button>
       <Menu

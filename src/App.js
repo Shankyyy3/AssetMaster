@@ -5,11 +5,16 @@ import './App.css'
 //import FirstComponent from './components/FirstComponent';
 import SecondComponent from './components/SecondComponent';
 import { Route, Routes } from "react-router-dom";
+import BasicTable from "./components/BasicTable";
+import moment from "moment";
 
 const steps = ['1', '2']
 
 
 function App() {
+
+  const [showTable, setShowTable] = useState(false);
+  const handleButtonClick = () => {setShowTable(!showTable);}
   const [activeStep, setActiveStep] = useState(0);
   const [state, setState] = useState({
     right: false
@@ -62,8 +67,8 @@ function App() {
   const [assignedDate, setAssignedDate] = useState('');
   const [file, setFile] = useState(null);
   const [documents, setDocuments] = useState(null);
-  const [xmlfile,setxmlFile]=useState(null)
-  const [active,setActive]=useState('yes');
+  const [xmlfile,setxmlFile]=useState([])
+  const [active,setActive]=useState(true);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -83,10 +88,40 @@ function App() {
     setDocuments(null)
     setxmlFile(null)
   }
+  const allData =() =>{
+   // e.preventDefault();
+     let datas={
+      "id": 0,
+      "itemType": itemType,
+      "itemName":item ,
+      "subItemName": subItem,
+      "model": model,
+      "serialno": serialNo,
+      "brand": brand,
+      "pono": poNum,
+      "warrantydate": moment(assignedDate).format("YYYY-MM-DD"),
+      "isActive":active ===true ? true : false,
+
+      
+     }
+     fetch('https://localhost:7198/api/Employees/AddAssetMasters', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify(datas)
+})
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error(error));
+
+
+  };
   const handleFinalSubmit = (e) => {
     e.preventDefault();
-    console.log(firstName, lastName, phoneNo, employeeID, email, department, profession,itemType, item, subItem, model, serialNo, brand,poNum, assignedDate, file, documents,xmlfile)
-   
+    console.log("Active Status-"+active)
+    console.log(xmlfile)
+   allData();
   }
  
 
@@ -111,6 +146,10 @@ function App() {
          setitemType={setitemType} setItem={setItem} active={active} xmlfile={xmlfile} setxmlFile={setxmlFile} setActive={setActive} setSubItem={setSubItem} setModel={setModel} setSerialNo={setSerialNo} setBrand={setBrand} setPoNum={setPoNum} setAssignedDate={setAssignedDate} setFile={setFile} setDocuments={setDocuments} />}
 
       </Drawer>
+      <br/>
+      {/* <Button onClick={<BasicTable/>}>Hello</Button> */}
+      <button onClick={handleButtonClick}>{showTable ? 'Hide Table' : 'Show Table'}</button>{showTable && <BasicTable />}
+      
     </div>
   )
 }
