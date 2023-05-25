@@ -69,13 +69,14 @@ function App() {
   const [documents, setDocuments] = useState(null);
   const [xmlfile,setxmlFile]=useState([])
   const [active,setActive]=useState(true);
+  
 
   const handleSubmit = (e) => {
     e.preventDefault();
     handleNext()
   }
   const handleClear = (e) => {
-    e.preventDefault()
+   // e.preventDefault()
     setitemType('')
     setItem('')
     setSubItem('')
@@ -86,9 +87,13 @@ function App() {
     setAssignedDate('')
     setFile(null)
     setDocuments(null)
-    setxmlFile(null)
+    setxmlFile([])
   }
+  
+
+
   const allData =() =>{
+    //debugger;
    // e.preventDefault();
      let datas={
       "id": 0,
@@ -121,7 +126,13 @@ function App() {
     e.preventDefault();
     console.log("Active Status-"+active)
     console.log(xmlfile)
+    console.log(`${assignedDate.$D}-${assignedDate.$M+1}-${assignedDate.$y}`)
    allData();
+  //  if(name == 'xyz' && xmlfile.length > 0) {
+  //     var payload = {
+
+  //     }
+  //  }
   }
  
 

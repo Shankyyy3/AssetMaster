@@ -1,16 +1,9 @@
 import React,{useState} from "react";
-import "./FirstComponent.css";
 
-import dayjs from "dayjs";
 // import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import Axios from 'axios';
-import { AiOutlineClose, AiOutlineFileJpg } from "react-icons/ai";
-import { RxCrossCircled } from "react-icons/rx";
-
-
 
 import {
   BsFileEarmarkRichtext,
@@ -20,7 +13,6 @@ import {
 } from "react-icons/bs";
 //import tablee from "./tablee";
 import {
-  Avatar,
   Box,
   Button,
   FormControlLabel,
@@ -32,10 +24,9 @@ import {
   TextField,
   Typography,
   IconButton,
-
 } from "@mui/material";
 import CloseIcon from "@material-ui/icons/Close";
-import { array } from "prop-types";
+import "./FirstComponent.css";
 
 const itemTypes=["Consumable","Non-Consumable"];
 const departmentItems = [
@@ -58,7 +49,7 @@ const subItems = [
 ];
 const documentItems = ["In-Voice", "Office Order", "Email", "Others"];
 
-const SecondComponent = ({
+const SecondComponent = ({props,
   toggleDrawer,
   handleClear,
   active,setActive,
@@ -91,6 +82,38 @@ const SecondComponent = ({
   setFile,
   setDocuments,
 }) => {
+  const [isFrozen, setIsFrozen] = useState(true);
+  const handleModelChange = (e) => {
+    if (isFrozen) return;
+    const value = e.target.value;
+    // Allow only alphanumeric characters
+    const sanitizedValue = value.replace(/[^a-zA-Z0-9]/g, "");
+    setModel(sanitizedValue);
+  };
+
+  const handleSerialNoChange = (e) => {
+    if (isFrozen) return;
+    const value = e.target.value;
+    // Allow only alphanumeric characters
+    const sanitizedValue = value.replace(/[^a-zA-Z0-9]/g, "");
+    setSerialNo(sanitizedValue);
+  };
+  const handleBrandChange = (e) => {
+    if (isFrozen) return;
+    const value = e.target.value;
+    // Allow only alphanumeric characters
+    const sanitizedValue = value.replace(/[^a-zA-Z0-9]/g, "");
+    setBrand(sanitizedValue);
+  };
+
+  const handlePoNumChange = (e) => {
+    if (isFrozen) return;
+    const value = e.target.value;
+    // Allow only alphanumeric characters
+    const sanitizedValue = value.replace(/[^a-zA-Z0-9]/g, "");
+    setPoNum(sanitizedValue);
+  };
+
  
 
   const openFile = () => {
@@ -100,7 +123,7 @@ const SecondComponent = ({
     document.getElementById("xmlfile").click();
   };
   const changeMultipleFiles = (e) => {
-      setxmlFile(e.target.files);
+      setxmlFile(e.target.files );
     };
   const handleFileRemove = (index) => {
       setxmlFile(Array.from(xmlfile).filter((file, i) => i !== index));
@@ -122,6 +145,10 @@ const SecondComponent = ({
     return isRightFormat ;
   }
 
+  const handleAddButtonClick = () => {
+    // Toggle the frozen state
+    setIsFrozen(!isFrozen);
+  };
   
 
   return (
@@ -139,10 +166,11 @@ const SecondComponent = ({
                   itemTypes={itemTypes}
                   itemType={itemType}
                   setitemType={setitemType}
+                  isFrozen={isFrozen}
                 />
               </Grid>
               </Grid>
-            <Grid container spacing={4} marginTop="20px !important">
+            <Grid container spacing={4} marginTop="5px !important">
               <Grid item xs={12} sm={6}>
                 <FormLabel className="firstFo" htmlFor="item">
                   Item
@@ -151,6 +179,8 @@ const SecondComponent = ({
                   departmentItems={departmentItems}
                   item={item}
                   setItem={setItem}
+                  isFrozen={isFrozen}
+
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -161,6 +191,7 @@ const SecondComponent = ({
                   subItems={subItems}
                   subItem={subItem}
                   setSubItem={setSubItem}
+                  isFrozen={isFrozen}
                 />
               </Grid>
             </Grid>
@@ -176,7 +207,8 @@ const SecondComponent = ({
                   placeholder="Enter Model Name"
                   _placeholder={{ color: "#80848C" }}
                   value={model}
-                  onChange={(e) => setModel(e.target.value)}
+                  onChange={handleModelChange}
+                  autoComplete="off"
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -190,11 +222,13 @@ const SecondComponent = ({
                   placeholder="Enter the Serail No"
                   _placeholder={{ color: "#80848C" }}
                   value={serialNo}
-                  onChange={(e) => setSerialNo(e.target.value)}
+                  onChange={handleSerialNoChange}
+                  autoComplete="off"
+                  //disabled={true}
                 />
               </Grid>
             </Grid>
-            <Grid container spacing={4} marginTop="20px !important">
+            <Grid container spacing={4} marginTop="5px !important">
               <Grid  item xs={12} sm={6}>
                 <FormLabel className="firstFo" htmlFor="brand">
                   Brand
@@ -206,7 +240,8 @@ const SecondComponent = ({
                   placeholder="Enter Brand Name"
                   _placeholder={{ color: "#80848C" }}
                   value={brand}
-                  onChange={(e) => setBrand(e.target.value)}
+                  onChange={handleBrandChange}
+                  autoComplete="off"
                 />
               </Grid>
            
@@ -221,7 +256,8 @@ const SecondComponent = ({
                   placeholder="Enter Purchase Order No."
                   _placeholder={{ color: "#80848C" }}
                   value={poNum}
-                  onChange={(e) => setPoNum(e.target.value)}
+                  onChange={handlePoNumChange}
+                  autoComplete="off"
                 />
               </Grid>
             </Grid>
@@ -237,11 +273,12 @@ const SecondComponent = ({
                       OpenPickerIcon: BsFillCalendar2EventFill,
                     }}
                     renderInput={(params) => (
-                      <TextField {...params} error={false} />
+                      <TextField {...params} error={false} disabled={isFrozen}/>
                     )}
                     format="DD-MM-YYYY"
                     value={assignedDate || null}
                     onChange={(newValue) => setAssignedDate(newValue)}
+                    disabled={isFrozen}
                   />
                 </LocalizationProvider>
               </Grid>
@@ -257,9 +294,9 @@ const SecondComponent = ({
                                     style={{ width: 'auto' }}
                                     row={true}
                                 >
-                                    <FormControlLabel value={true} control={<Radio />} label="Yes"
+                                    <FormControlLabel value={true} control={<Radio />} label="Yes"  disabled={isFrozen}
                                   />
-                                    <FormControlLabel value={false} control={<Radio />} label="No" 
+                                    <FormControlLabel value={false} control={<Radio />} label="No"  disabled={isFrozen}
                                     />
                                 </RadioGroup>
                             </Grid>
@@ -281,12 +318,14 @@ const SecondComponent = ({
                   multiple
                   style={{ display: "none" }}
                  onChange={changeMultipleFiles}
+                 disabled={isFrozen}
                 />
                 <Button
                   variant="outlined"
                   className="form-document-upload"
                   onClick={openSecondFile}
                   beforeUpload={beforeUpload}
+                  disabled={isFrozen}
        
                 >
                   <BsFileEarmarkRichtext
@@ -393,7 +432,7 @@ const SecondComponent = ({
                   marginRight: "10px",
                   marginBottom: "15px",
                 }}
-                onClick={handleClear}
+                onClick={handleAddButtonClick}
               >
                Add
               </Button>
@@ -438,10 +477,12 @@ const SecondComponent = ({
 
 export default SecondComponent;
 
-const ItemTypeBoxComponent = ({ itemTypes, itemType, setitemType }) => {
+const ItemTypeBoxComponent = ({ itemTypes, itemType, setitemType,isFrozen }) => {
+
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
+    if (isFrozen) return;
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
@@ -510,10 +551,11 @@ const ItemTypeBoxComponent = ({ itemTypes, itemType, setitemType }) => {
   );
 };
 
-const ItemBoxComponent = ({ departmentItems, item, setItem }) => {
+const ItemBoxComponent = ({ departmentItems, item, setItem,isFrozen }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
+    if (isFrozen) return;
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
@@ -582,10 +624,11 @@ const ItemBoxComponent = ({ departmentItems, item, setItem }) => {
   );
 };
 
-const SubItemBoxComponent = ({ subItems, subItem, setSubItem }) => {
+const SubItemBoxComponent = ({ subItems, subItem, setSubItem,isFrozen }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
+    if (isFrozen) return;
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
@@ -659,6 +702,7 @@ const DocumentItemBoxComponent = ({
   documents,
   setDocuments,
 }) => {
+  
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {

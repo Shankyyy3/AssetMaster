@@ -1,4 +1,3 @@
-
 import React, {useState, useEffect} from 'react';
 import "./BasicTable.css";
 import Table from '@mui/material/Table';
@@ -12,15 +11,15 @@ import TablePagination from '@mui/material/TablePagination';
 import Switch from '@mui/material/Switch';
 import moment from 'moment';
 
-function createData(assetId,itemType, item, subItem, model, serialNo, brand, purchaseOno,wDate,activeSt) {
-  return {assetId,itemType, item, subItem, model, serialNo,brand,purchaseOno,wDate,activeSt };
+function createData(assetId,itemType, item, subItem, model, serialNo, brand, purchaseOno,wDate,activeSt, documents) {
+  return {assetId,itemType, item, subItem, model, serialNo,brand,purchaseOno,wDate,activeSt, documents };
 }
 
 export default function BasicTable() {
   const [data, setData] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-
+  const [selectedRow, setSelectedRow] = useState(null);
 
   useEffect(() => {
     fetch('https://localhost:7198/api/Employees/AddData')
@@ -29,6 +28,9 @@ export default function BasicTable() {
       .catch(error => console.error(error));
       console.log(data)
   }, []);
+
+  
+
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -52,6 +54,9 @@ export default function BasicTable() {
     }
   });
   
+  const handleViewClick = (index) => {
+    setSelectedRow(index);
+  }
 
   
   return (
@@ -67,33 +72,30 @@ export default function BasicTable() {
          
           
           <TableCell style= {{ fontSize: '16px',fontFamily:'"Inter",sans-serif' }}>AssetId</TableCell>
-            <TableCell  style= {{ fontSize: '16px',fontFamily:'"Inter",sans-serif' }}>Item Type</TableCell>
+          <TableCell  style= {{ fontSize: '16px',fontFamily:'"Inter",sans-serif' }}>Item Type</TableCell>
             <TableCell  style= {{ fontSize: '16px',fontFamily:'"Inter",sans-serif' }} align="centre">Item</TableCell>
             <TableCell  style= {{ fontSize: '16px',fontFamily:'"Inter",sans-serif' }} align="centre">Sub-Item</TableCell>
             <TableCell  style= {{ fontSize: '16px',fontFamily:'"Inter",sans-serif' }} align="centre">Model</TableCell>
             <TableCell  style= {{ fontSize: '16px',fontFamily:'"Inter",sans-serif' }} align="centre">Serial No.</TableCell>
             <TableCell  style= {{ fontSize: '16px',fontFamily:'"Inter",sans-serif' }} align="centre">Brand</TableCell>
-            <TableCell  style= {{ fontSize: '16px',fontFamily:'"Inter",sans-serif' }} align="centre">Purchase <br/>Order No.</TableCell>
-            <TableCell  style= {{ fontSize: '16px',fontFamily:'"Inter",sans-serif' }} align="centre">Warranty date</TableCell>
-            <TableCell  style= {{ fontSize: '16px',fontFamily:'"Inter",sans-serif' }} align="centre">Active Status<br/>
-            <select
-    value={activeFilter}
-    onChange={(event) => setActiveFilter(event.target.value)}>
-     <option value="all">All</option>
-    <option value="active">Active</option>
-    <option value="inactive">Inactive</option>
-  </select>
-  </TableCell>
+          <TableCell style= {{ fontSize: '16px',fontFamily:'"Inter",sans-serif' }} align="centre">Purchase Order No</TableCell>
+          <TableCell style= {{ fontSize: '16px',fontFamily:'"Inter",sans-serif' }} align="centre">Warranty End Date</TableCell>
+          <TableCell style= {{ fontSize: '16px',fontFamily:'"Inter",sans-serif' }} align="centre">Active Status</TableCell>
+          <TableCell style= {{ fontSize: '16px',fontFamily:'"Inter",sans-serif' }} align="centre">Documents</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row,index) => (
-            <TableRow
-              key={index}
-              sx={index % 2 ? { bgcolor: '#F8F9FD' } : null}
-            > 
-           
-              <TableCell style= {{ fontSize: '14px',fontFamily:'"Inter",sans-serif' }} component="th" scope="row">
+          {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
+            const isItemSelected = selectedRow === index;
+            const labelId = `enhanced-table-checkbox-${index}`;
+            return (
+              <TableRow
+                key={index}
+                hover
+                sx={index % 2 ? { bgcolor: '#F8F9FD' } : null}
+                selected={isItemSelected}
+              >
+                <TableCell style= {{ fontSize: '14px',fontFamily:'"Inter",sans-serif' }} component="th" scope="row">
                 {row.assetid}
               </TableCell>
               <TableCell style= {{ fontSize: '14px',fontFamily:'"Inter",sans-serif' }} component="th" scope="row">
@@ -118,22 +120,24 @@ export default function BasicTable() {
                   />
                   
                 </TableCell>
-            </TableRow>
-          ))}
+                <TableCell><button className='viewButton' onClick={() => handleViewClick(index)}>View</button></TableCell>
+                <TableCell style= {{ fontSize: '14px',fontFamily:'"Inter",sans-serif' }} align="centre">{row.documents}</TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
-      
+      <TablePagination
+        rowsPerPageOptions={[10, 25, 100]}
+        component="div"
+        count={data.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
     </TableContainer>
-    <TablePagination
-    style= {{ fontSize: '14px',fontFamily:'"Inter",sans-serif' }}
-          rowsPerPageOptions={[10, 25, 50]}
-          component="div"
-          count={data.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-    </Paper>
+  </Paper>
   );
 }
+
